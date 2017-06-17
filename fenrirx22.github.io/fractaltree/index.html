@@ -12,6 +12,7 @@
 	const VIEW_ANGLE = 45;
 	const ASPECT_RATIO = WIDTH/HEIGHT
 	const ANGLE_TO_RAD = Math.PI/180;
+	const TREE_DEPTH = 10;
 
 
 	var scene, camera, renderer;
@@ -38,7 +39,6 @@
 
 		var container = document.querySelector("#container");
 
-		// const pointLight = new THREE.PointLight(0xFFFFFF, 1, 0);
 		const pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.set(0,0,100);
 		scene.add(pointLight);
@@ -60,36 +60,27 @@
 
 	function initialLine(){
 		console.log("initial line");
-		buildLine(new THREE.Vector3(0,-30,0), 0, 140 , 10);
+		buildLine(new THREE.Vector3(0,-30,0), 0, 90 , TREE_DEPTH);
 		renderer.render(scene,camera);
 
 	}
 
-	function buildLine(fromPos, angle1,angle2 ,size){
+	function buildLine(fromPos, angle1, angle2 ,size){
 		var geometry = new THREE.BufferGeometry();
 		
 		var rad = angle1 * ANGLE_TO_RAD;
 		var rad1 = angle2 * ANGLE_TO_RAD;
 		var newX,newY,newZ;
-		if(size == 10) {
+		if(size == TREE_DEPTH) {
 			newX = fromPos.x;
-			newY = fromPos.y + size;
+			newY = fromPos.y+size;
 			newZ = fromPos.z;
 
 		} else {
 		//3D
 		newX = fromPos.x + (Math.sin(rad) * Math.cos(rad1) * size);
-		newY = fromPos.y + (Math.sin(rad) * Math.sin(rad1) * size);
-		newZ = fromPos.z + (Math.cos(rad) * size);
-
-
-		// console.log("from x = " + fromPos.x);
-		// console.log("from y = " + fromPos.y);
-		// console.log("from z = " + fromPos.z);
-
-		// console.log("x = " + newX);
-		// console.log("y = " + newY);
-		// console.log("z = " + newZ);
+		newY = fromPos.y + Math.abs(Math.cos(rad) * size);
+		newZ = fromPos.z + (Math.sin(rad) * Math.sin(rad1) * size);
 
 	}
 
@@ -104,8 +95,8 @@
 	group.add(line);
 	if(size>3){
 			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2,size-1,false);
-			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2+20,size-1,false);
-			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2-20,size-1,false);
+			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2+120,size-1,false);
+			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2-120,size-1,false);
 		}
 	}
 
