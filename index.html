@@ -1,0 +1,142 @@
+<head></head>
+<body>
+	<div id="container"></div>
+</body>
+<script src="js/three.min.js"></script>
+<script>
+
+	const WIDTH = window.innerWidth;
+	const HEIGHT = window.innerHeight;
+	const NEAR = 1;
+	const FAR = 500;
+	const VIEW_ANGLE = 45;
+	const ASPECT_RATIO = WIDTH/HEIGHT
+	const ANGLE_TO_RAD = Math.PI/180;
+
+
+	var scene, camera, renderer;
+	var basicMaterial;
+	var group;
+	var counter = 0;
+	// var angle = 45;
+
+	window.onload = function() {
+		init();
+		initialLine()	
+		animate();
+	}
+
+	function init() {
+		group = new THREE.Group();
+		scene = new THREE.Scene();
+		basicMaterial = new THREE.LineBasicMaterial({color: 0xFFFFFF});
+
+		camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT_RATIO, NEAR, FAR );
+		camera.position.set(0,0,100);
+		camera.lookAt(new THREE.Vector3(0,0,0));
+
+		renderer = new THREE.WebGLRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+
+		var container = document.querySelector("#container");
+
+		// const pointLight = new THREE.PointLight(0xFFFFFF, 1, 0);
+		const pointLight = new THREE.PointLight(0xFFFFFF);
+		pointLight.position.set(0,0,100);
+		scene.add(pointLight);
+		scene.add(group);
+		container.appendChild( renderer.domElement );
+
+	}
+
+	function animate() {
+
+		
+		// counter++;
+		// if(counter<100){
+			requestAnimationFrame( animate );
+		// }
+		// var fromPos = new Object;
+		// var toPos = new Object;
+		// fromPos.x = Math.floor((Math.random() * 20) -10);
+		// fromPos.y= Math.floor((Math.random() * 20) -10);
+		// toPos.x = Math.floor((Math.random() * 20) -10);
+		// toPos.y= Math.floor((Math.random() * 20) -10);
+
+		// console.log(fromPos.x + " " + fromPos.y);
+		// buildLine(fromPos,toPos)
+		// mesh.rotation.x += 0.01;
+		// mesh.rotation.y += 0.02;
+		group.rotateY(0.5*ANGLE_TO_RAD);
+		// group.rotateZ(0.2*ANGLE_TO_RAD);
+
+		renderer.render( scene, camera );
+
+	}
+
+	function initialLine(){
+		console.log("initial line");
+		buildLine(new THREE.Vector3(0,-30,0), 0, 0 , 10, true);
+		renderer.render(scene,camera);
+
+	}
+
+	function buildLine(fromPos, angle1,angle2 ,size, root){
+		var geometry = new THREE.BufferGeometry();
+		
+		var rad = angle1 * ANGLE_TO_RAD;
+		var rad1 = angle2 * ANGLE_TO_RAD;
+
+		// var newX = fromPos.x + (Math.cos(rad) * size);
+		// var newY = fromPos.y + (Math.sin(rad) * size);
+		// var newZ = fromPos.z;
+		var newX,newY,newZ;
+		if(root) {
+			newX = fromPos.x;
+			newY = fromPos.y + size;
+			newZ = fromPos.z;
+
+		} else {
+		//3D
+		newX = fromPos.x + (Math.sin(rad) * Math.cos(rad1) * size);
+		newY = fromPos.y + (Math.sin(rad) * Math.sin(rad1) * size);
+		newZ = fromPos.z + (Math.cos(rad) * size);
+
+
+		// console.log("from x = " + fromPos.x);
+		// console.log("from y = " + fromPos.y);
+		// console.log("from z = " + fromPos.z);
+
+		// console.log("x = " + newX);
+		// console.log("y = " + newY);
+		// console.log("z = " + newZ);
+
+	}
+
+	
+
+	var vertices = new Float32Array([
+		fromPos.x, fromPos.y,fromPos.z,
+		newX, newY, newZ ])
+
+	geometry.addAttribute( 'position' , new THREE.BufferAttribute( vertices, 3 ) );
+
+	var line = new THREE.Line(geometry, basicMaterial);
+	group.add(line);
+	if(size>3){
+			// buildLine(new THREE.Vector3(newX,newY,0),angle-20,size-1);
+			// buildLine(new THREE.Vector3(newX,newY,0),angle+20,size-1);
+			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2,size-1,false);
+			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2+20,size-1,false);
+			buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2-20,size-1,false);
+			// buildLine(new THREE.Vector3(newX,newY,newZ),angle1-20,angle2,size-1,false);
+
+			// buildLine(new THREE.Vector3(newX,newY,newZ),angle1+20,angle2+120,size-1);
+			// buildLine(new THREE.Vector3(newX,newY,newZ),angle1,angle2,size-1);
+			// buildLine(new THREE.Vector3(newX,newY,newZ),angle1,angle2-120,size-1);
+		}
+	}
+
+
+
+</script>
